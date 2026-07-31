@@ -1,5 +1,5 @@
 library IEEE;
-library lib_riscv_util;
+library riscv_utils;
 
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;

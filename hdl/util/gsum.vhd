@@ -1,5 +1,5 @@
 library IEEE;
-library lib_riscv_util;
+library riscv_utils;
 
 
 use IEEE.STD_LOGIC_1164.ALL;
@@ -36,7 +36,7 @@ carry(0) <= '0';
 
 gen_fa : for i in 0 to C_OP_A_WIDTH-1 generate
 
-u_fa_inst : entity lib_riscv_util.gfadder
+u_fa_inst : entity riscv_utils.gfadder
         port map (
             a_i => op_a_i(i),
             b_i => op_b_ex(i),
