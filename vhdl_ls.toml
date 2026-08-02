@@ -1,0 +1,26 @@
+# File names are either absolute or relative to the parent folder of the
+# vhdl_ls.toml file and supports glob-style patterns.
+
+[libraries]
+
+
+riscv_utils.files = [
+  'hdl/util/gfadder.vhd',
+  'hdl/util/gsum.vhd',
+  'hdl/util/gcounter.vhd',
+]
+
+riscv_core.files = [
+  'hdl/riscv_core_pkg.vhd',    
+  'hdl/core/pc.vhd',
+  'hdl/riscv_top.vhd',
+]
+
+riscv_bus.files = [
+  'hdl/bus/wishbone_biu.vhd',
+]
+
+riscv_tb.files = [
+  'tb/wishbone_dual_port_ram.vhd',
+  'tb/riscv_top_tb.vhd',
+]
