@@ -1,6 +1,13 @@
 library IEEE;
+library riscv_tb;
+library riscv_core;
+library riscv_bus;
+
+
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
+use riscv_core.riscv_core_pkg.ALL;
+
 
 entity riscv_top_tb is
 -- Testbenches do not have ports
@@ -15,63 +22,59 @@ architecture sim of riscv_top_tb is
     signal rst_n : std_logic := '0';
 
     -- Native Processor Instruction Interface Wires
-    signal rv_iif_data_s  : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0);
-    signal rv_iif_addr_s  : std_logic_vector(C_RV_ADDR_WIDTH-1 downto 0);
-    signal rv_iif_valid_s : std_logic;
-    signal rv_iif_ready_s : std_logic;
+    signal rv_iif_data_s  : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0) := ( others => '0' );
+    signal rv_iif_addr_s  : std_logic_vector(C_RV_ADDR_WIDTH-1 downto 0):= ( others => '0' );
+    signal rv_iif_valid_s : std_logic := '0';
+    signal rv_iif_ready_s : std_logic := '0';
 
     -- Native Processor Data Interface Wires
-    signal rv_dif_data_to_core   : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0);
-    signal rv_dif_data_from_core : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0);
-    signal rv_dif_addr_s         : std_logic_vector(C_RV_ADDR_WIDTH-1 downto 0);
-    signal rv_dif_wr_s           : std_logic;
-    signal rv_dif_be_in_s        : std_logic := '1'; -- Default dummy byte enable input
-    signal rv_dif_be_out_s       : std_logic;
-    signal rv_dif_valid_s        : std_logic;
-    signal rv_dif_ready_s        : std_logic;
+    signal rv_dif_data_to_core   : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0):= ( others => '0' );
+    signal rv_dif_data_from_core : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0):= ( others => '0' );
+    signal rv_dif_addr_s         : std_logic_vector(C_RV_ADDR_WIDTH-1 downto 0):= ( others => '0' );
+    signal rv_dif_wr_s           : std_logic := '0';
+    signal rv_dif_be_in_s        : std_logic := '0'; -- Default dummy byte enable input
+    signal rv_dif_be_out_s       : std_logic := '0';
+    signal rv_dif_valid_s        : std_logic := '0';
+    signal rv_dif_ready_s        : std_logic := '0';
 
     -- Wishbone Instruction Bus Interface Wires
-    signal wb_iif_adr : std_logic_vector(C_RV_ADDR_WIDTH-1 downto 0);
-    signal wb_iif_dat_w : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0);
-    signal wb_iif_we  : std_logic;
-    signal wb_iif_sel : std_logic_vector(C_RV_DATA_WIDTH/8-1 downto 0);
-    signal wb_iif_cyc : std_logic;
-    signal wb_iif_stb : std_logic;
-    signal wb_iif_dat_r : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0);
-    signal wb_iif_ack : std_logic;
+    signal wb_iif_adr : std_logic_vector(C_RV_ADDR_WIDTH-1 downto 0):= ( others => '0' );
+    signal wb_iif_dat_w : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0):= ( others => '0' );
+    signal wb_iif_we  : std_logic := '0';
+    signal wb_iif_sel : std_logic_vector(C_RV_DATA_WIDTH/8-1 downto 0):= ( others => '0' );
+    signal wb_iif_cyc : std_logic := '0';
+    signal wb_iif_stb : std_logic := '0';
+    signal wb_iif_dat_r : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0):= ( others => '0' );
+    signal wb_iif_ack : std_logic := '0';
     signal wb_iif_err : std_logic := '0';
     signal wb_iif_rty : std_logic := '0';
 
     -- Wishbone Data Bus Interface Wires
-    signal wb_dif_adr : std_logic_vector(C_RV_ADDR_WIDTH-1 downto 0);
-    signal wb_dif_dat_w : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0);
-    signal wb_dif_we  : std_logic;
-    signal wb_dif_sel : std_logic_vector(C_RV_DATA_WIDTH/8-1 downto 0);
-    signal wb_dif_cyc : std_logic;
-    signal wb_dif_stb : std_logic;
-    signal wb_dif_dat_r : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0);
-    signal wb_dif_ack : std_logic;
-    signal wb_dif_err : std_logic;
+    signal wb_dif_adr : std_logic_vector(C_RV_ADDR_WIDTH-1 downto 0):= ( others => '0' );
+    signal wb_dif_dat_w : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0):= ( others => '0' );
+    signal wb_dif_we  : std_logic := '0';
+    signal wb_dif_sel : std_logic_vector(C_RV_DATA_WIDTH/8-1 downto 0):= ( others => '0' );
+    signal wb_dif_cyc : std_logic := '0';
+    signal wb_dif_stb : std_logic := '0';
+    signal wb_dif_dat_r : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0):= ( others => '0' );
+    signal wb_dif_ack : std_logic := '0';
+    signal wb_dif_err : std_logic := '0';
     signal wb_dif_rty : std_logic := '0';
 
     -- Fixed wrapper for the Byte-Enable vector needed by Wishbone
-    signal biu_dif_be_vector : std_logic_vector(3 downto 0);
+    signal biu_dif_be_vector : std_logic_vector(C_RV_DATA_WIDTH/8-1 downto 0):= ( others => '0' );
 	
-	signal sim_done : std_logic := '0'
-
 begin
 
     uut_clk : process
     begin
 		clk <= '0';
-		wait for CLK_PERIOD / 2;
+		wait for C_CLK_PERIOD / 2;
 		clk <= '1';
-		wait for CLK_PERIOD / 2;
+		wait for C_CLK_PERIOD / 2;
     end process;
 
-
-
-	uut_riscv : entity work.riscv_top
+	uut_riscv : entity riscv_core.riscv_top
 		port map (
 			clk            => clk,
             rst_n          => rst_n,
@@ -92,7 +95,7 @@ begin
     ---------------------------------------------------------------------
     -- UUT 2: Wishbone Bus Interface Unit (BIU)
     ---------------------------------------------------------------------
-    uut_biu : entity work.wishbone_biu
+    uut_biu : entity riscv_bus.wishbone_biu
         generic map (
             C_ADDR_WIDTH => C_RV_ADDR_WIDTH,
             C_DATA_WIDTH => C_RV_DATA_WIDTH
@@ -144,7 +147,7 @@ begin
     ---------------------------------------------------------------------
     -- UUT 3: Dual-Port Wishbone Block RAM Model
     ---------------------------------------------------------------------
-    uut_memory : entity work.wishbone_dual_port_ram
+    uut_memory : entity riscv_tb.wishbone_dual_port_ram
         generic map (
             C_ADDR_WIDTH => C_RV_ADDR_WIDTH,
             C_DATA_WIDTH => C_RV_DATA_WIDTH,
@@ -176,5 +179,23 @@ begin
             wb_dif_ack_o => wb_dif_ack,
             wb_dif_err_o => wb_dif_err
         );
+        
+stim_proc : process is
+
+
+    procedure proc_reset is
+    begin
+        rst_n <= '0';
+        for i in 1 to 50 loop
+            wait until rising_edge(clk);
+        end loop;
+        rst_n <= '1';        
+    end procedure;
+
+begin
+
+    proc_reset;
+    wait;
+end process;        
 
 end architecture sim;

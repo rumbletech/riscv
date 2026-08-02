@@ -3,7 +3,7 @@
 <!--                                                         -->
 <!-- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.   -->
 
-<Project Version="7" Minor="61" Path="c:/main/riscv/riscv_rv32i.xpr">
+<Project Version="7" Minor="61" Path="C:/Main/riscv/riscv_rv32i.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="711bc3e628084c20b29df5223972f4fa"/>
@@ -42,6 +42,7 @@
     <Option Name="SimulatorGccVersionVCS" Val="9.2.0"/>
     <Option Name="SimulatorGccVersionRiviera" Val="9.3.0"/>
     <Option Name="SimulatorGccVersionActiveHdl" Val="9.3.0"/>
+    <Option Name="SimulatorLanguage" Val="VHDL"/>
     <Option Name="BoardPart" Val=""/>
     <Option Name="ActiveSimSet" Val="sim_1"/>
     <Option Name="DefaultLib" Val="xil_defaultlib"/>
@@ -57,7 +58,7 @@
     <Option Name="IPUserFilesDir" Val="$PIPUSERFILESDIR"/>
     <Option Name="IPStaticSourceDir" Val="$PIPUSERFILESDIR/ipstatic"/>
     <Option Name="EnableBDX" Val="FALSE"/>
-    <Option Name="WTXSimLaunchSim" Val="2"/>
+    <Option Name="WTXSimLaunchSim" Val="12"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -88,54 +89,63 @@
   <FileSets Version="1" Minor="31">
     <FileSet Name="sources_1" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
       <Filter Type="Srcs"/>
-      <File Path="$PPRDIR/../../Main/riscv/hdl/util/gfadder.vhd">
+      <File Path="$PPRDIR/hdl/util/gfadder.vhd">
         <FileInfo>
           <Attr Name="Library" Val="riscv_utils"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../Main/riscv/hdl/util/gsum.vhd">
+      <File Path="$PPRDIR/hdl/util/gsum.vhd">
         <FileInfo>
           <Attr Name="Library" Val="riscv_utils"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../Main/riscv/hdl/util/gcounter.vhd">
+      <File Path="$PPRDIR/hdl/util/gcounter.vhd">
         <FileInfo>
           <Attr Name="Library" Val="riscv_utils"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../Main/riscv/hdl/core/pc.vhd">
+      <File Path="$PPRDIR/hdl/core/pc.vhd">
         <FileInfo>
           <Attr Name="Library" Val="riscv_core"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../Main/riscv/hdl/riscv_core_pkg.vhd">
+      <File Path="$PPRDIR/hdl/riscv_core_pkg.vhd">
         <FileInfo>
           <Attr Name="Library" Val="riscv_core"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../Main/riscv/hdl/riscv_top.vhd">
+      <File Path="$PPRDIR/hdl/riscv_top.vhd">
         <FileInfo>
           <Attr Name="Library" Val="riscv_core"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../Main/riscv/component.xml">
+      <File Path="$PPRDIR/component.xml">
         <FileInfo SFType="IPXACT"/>
+      </File>
+      <File Path="$PPRDIR/hdl/bus/wishbone_biu.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="riscv_bus"/>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
       </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="ricsv_top"/>
+        <Option Name="TopModule" Val="riscv_top"/>
+        <Option Name="dataflowViewerSettings" Val="min_width=16"/>
       </Config>
     </FileSet>
     <FileSet Name="constrs_1" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1" RelGenDir="$PGENDIR/constrs_1">
@@ -145,11 +155,72 @@
       </Config>
     </FileSet>
     <FileSet Name="sim_1" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/sim_1" RelGenDir="$PGENDIR/sim_1">
+      <Filter Type="Srcs"/>
+      <File Path="$PPRDIR/hdl/util/gfadder.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="riscv_utils"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/hdl/util/gsum.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="riscv_utils"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/hdl/util/gcounter.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="riscv_utils"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/hdl/core/pc.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="riscv_core"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/hdl/riscv_core_pkg.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="riscv_core"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/hdl/riscv_top.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="riscv_core"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/hdl/bus/wishbone_biu.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="riscv_bus"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/tb/wishbone_dual_port_ram.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="riscv_tb"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/tb/riscv_top_tb.vhd">
+        <FileInfo>
+          <Attr Name="Library" Val="riscv_tb"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
-        <Option Name="TopModule" Val="ricsv_top"/>
-        <Option Name="TopLib" Val="riscv_core"/>
-        <Option Name="TopAutoSet" Val="TRUE"/>
+        <Option Name="TopModule" Val="riscv_top_tb"/>
+        <Option Name="TopLib" Val="riscv_tb"/>
         <Option Name="TransportPathDelay" Val="0"/>
         <Option Name="TransportIntDelay" Val="0"/>
         <Option Name="SelectedSimModel" Val="rtl"/>
@@ -157,7 +228,7 @@
         <Option Name="PamDutBypassFile" Val="xil_dut_bypass"/>
         <Option Name="PamSignalDriverFile" Val="xil_bypass_driver"/>
         <Option Name="PamPseudoTop" Val="pseudo_tb"/>
-        <Option Name="SrcSet" Val="sources_1"/>
+        <Option Name="SrcSet" Val=""/>
       </Config>
     </FileSet>
     <FileSet Name="utils_1" Type="Utils" RelSrcDir="$PSRCDIR/utils_1" RelGenDir="$PGENDIR/utils_1">

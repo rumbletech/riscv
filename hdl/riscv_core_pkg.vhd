@@ -4,9 +4,9 @@
 -- Purpose : Common types, constants, functions, and procedures
 --============================================================
 
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 
 package riscv_core_pkg is
 

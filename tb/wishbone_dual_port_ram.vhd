@@ -1,4 +1,6 @@
 library IEEE;
+library riscv_tb;
+
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 use std.textio.all; -- Required for file reading capabilities
@@ -67,7 +69,7 @@ architecture rtl of wishbone_dual_port_ram is
                 read(temp_line, temp_word);
                 -- Pack characters into standard logic vectors
                 for j in 0 to 7 loop
-                    ram_data(i)((31 - j*4) downt (28 - j*4)) := hex_char_to_slv(temp_word(j+1));
+                    ram_data(i)((31 - j*4) downto (28 - j*4)) := hex_char_to_slv(temp_word(j+1));
                 end loop;
             else
                 exit; -- Stop if file runs out of text lines early
