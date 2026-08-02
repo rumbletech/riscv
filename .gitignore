@@ -3,3 +3,4 @@ riscv_rv32i.hw/
 riscv_rv32i.sim/
 riscv_rv32i.ip_user_files/
 riscv_rv32i.runs/
+riscv_rv32i.srcs/

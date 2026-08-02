@@ -20,35 +20,45 @@ entity riscv_top is
 		rv_dif_valid_o : out std_logic := '0';
 		rv_dif_ready_i : in std_logic := '0';
 		-- Processor Interface ( Instructions ) --
+		-- Instruction Data Interface --
+		rv_iif_valid_i : in std_logic := '0';
+		rv_iif_ready_o : out std_logic := '0';
 		rv_iif_data_i : in std_logic_vector(C_RV_DATA_WIDTH-1 downto 0):= ( others => '0' );
+		-- Instruction Address Interface
 		rv_iif_addr_o : out std_logic_vector(C_RV_ADDR_WIDTH-1 downto 0):= ( others => '0' );
 		rv_iif_valid_o : out std_logic := '0';
-		rv_iif_ready_i : in std_logic := '0'	
+		rv_iif_ready_i : in std_logic := '0';
+		
     );
 end entity riscv_top;
 
 architecture rtl of riscv_top is
 
-signal pc_halt : std_logic := '0';
-signal pc_load : std_logic := '0';
-signal cnt_to_pc : std_logic_vector(C_RV_PC_WIDTH-1 downto 0) := ( others => '0' );
-signal cnt_from_pc : std_logic_vector(C_RV_PC_WIDTH-1 downto 0) := ( others => '0' );
 
 begin
 
 
-u_pc : entity riscv_core.pc
-		generic map (
-			C_WIDTH => C_RV_PC_WIDTH,
-			C_CNT_STEP => C_RV_PC_STEP_SIZE
-		)
-        port map (
-			clk => clk,
-			rst_n => rst_n,
-			halt_i => pc_halt,
-			pc_load_i => pc_load,
-			pc_cnt_i => cnt_to_pc,
-			pc_cnt_o => cnt_from_pc
-        );
-		
+
+fu_inst: entity riscv_core.fu
+ port map(
+	clk => clk,
+	rst_n => rst_n,
+	rv_dif_data_i => rv_dif_data_i,
+	rv_dif_data_o => rv_dif_data_o,
+	rv_dif_addr_o => rv_dif_addr_o,
+	rv_dif_wr_o => rv_dif_wr_o,
+	rv_dif_be_i => rv_dif_be_i,
+	rv_dif_be_o => rv_dif_be_o,
+	rv_dif_valid_o => rv_dif_valid_o,
+	rv_dif_ready_i => rv_dif_ready_i,
+	rv_iif_valid_i => rv_iif_valid_i,
+	rv_iif_ready_o => rv_iif_ready_o,
+	rv_iif_data_i => rv_iif_data_i,
+	rv_iif_addr_o => rv_iif_addr_o,
+	rv_iif_valid_o => rv_iif_valid_o,
+	rv_iif_ready_i => rv_iif_ready_i
+);
+
+
+
 end architecture rtl;
