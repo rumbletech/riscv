@@ -3,7 +3,7 @@
 <!--                                                         -->
 <!-- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.   -->
 
-<Project Version="7" Minor="61" Path="c:/main/riscv/riscv_iv32.xpr">
+<Project Version="7" Minor="61" Path="c:/main/riscv/riscv_rv32i.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="711bc3e628084c20b29df5223972f4fa"/>

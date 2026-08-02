@@ -282,7 +282,7 @@
     <spirit:fileSet>
       <spirit:name>xilinx_xpgui_view_fileset</spirit:name>
       <spirit:file>
-        <spirit:name>xgui/pc_v1_0.tcl</spirit:name>
+        <spirit:name>xgui/riscv_rv32i_v1_0.tcl</spirit:name>
         <spirit:fileType>tclSource</spirit:fileType>
         <spirit:userFileType>CHECKSUM_eeaa3c98</spirit:userFileType>
         <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
@@ -303,7 +303,7 @@
       </spirit:file>
     </spirit:fileSet>
   </spirit:fileSets>
-  <spirit:description>pc_v1_0</spirit:description>
+  <spirit:description>riscv_rv32i_v1_0</spirit:description>
   <spirit:parameters>
     <spirit:parameter>
       <spirit:name>C_WIDTH</spirit:name>
@@ -317,7 +317,7 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>Component_Name</spirit:name>
-      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Component_Name" spirit:order="1">pc_v1_0</spirit:value>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Component_Name" spirit:order="1">riscv_rv32i_v1_0</spirit:value>
     </spirit:parameter>
   </spirit:parameters>
   <spirit:vendorExtensions>
@@ -328,7 +328,7 @@
       <xilinx:taxonomies>
         <xilinx:taxonomy>/UserIP</xilinx:taxonomy>
       </xilinx:taxonomies>
-      <xilinx:displayName>pc_v1_0</xilinx:displayName>
+      <xilinx:displayName>riscv_rv32i_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
       <xilinx:coreRevision>1</xilinx:coreRevision>
       <xilinx:coreCreationDateTime>2026-07-31T17:41:18Z</xilinx:coreCreationDateTime>
