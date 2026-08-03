@@ -13,12 +13,16 @@ riscv_utils.files = [
 riscv_core.files = [
   'hdl/riscv_core_pkg.vhd',    
   'hdl/core/pc.vhd',
-  'hdl/core/fu.vhd',  
+  'hdl/core/fetch.vhd',  
   'hdl/riscv_top.vhd',
 ]
 
 riscv_bus.files = [
   'hdl/bus/wishbone_biu.vhd',
+]
+
+riscv_mem.files = [
+  'hdl/mem/mem_ctrl.vhd',    
 ]
 
 riscv_tb.files = [

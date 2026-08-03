@@ -7,6 +7,8 @@ use std.textio.all; -- Required for file reading capabilities
 
 entity wishbone_dual_port_ram is
     generic (
+        C_READ_LATENCY : integer := 0;
+        C_WRITE_LATENCY : integer := 0;
         C_ADDR_WIDTH : positive := 32;
         C_DATA_WIDTH : positive := 32;
         C_RAM_DEPTH  : positive := 2048; -- 2048 words * 4 bytes = 8 KB RAM
@@ -16,26 +18,17 @@ entity wishbone_dual_port_ram is
         clk   : in std_logic;
         rst_n : in std_logic;
 
-        -- Wishbone Slave Interface (Instructions)
-        wb_iif_adr_i : in  std_logic_vector(C_ADDR_WIDTH-1 downto 0);
-        wb_iif_dat_i : in  std_logic_vector(C_DATA_WIDTH-1 downto 0);
-        wb_iif_we_i  : in  std_logic;
-        wb_iif_sel_i : in  std_logic_vector(C_DATA_WIDTH/8-1 downto 0);
-        wb_iif_cyc_i : in  std_logic;
-        wb_iif_stb_i : in  std_logic;
-        wb_iif_dat_o : out std_logic_vector(C_DATA_WIDTH-1 downto 0);
-        wb_iif_ack_o : out std_logic;
+        -- PORT A --
+        PA_DATA_I : in  std_logic_vector(C_DATA_WIDTH-1 downto 0);
+        PA_ADDR_I : in  std_logic_vector(C_ADDR_WIDTH-1 downto 0);
+        PA_WE_I   : in  std_logic;
+        PA_DATA_O : out std_logic_vector(C_DATA_WIDTH-1 downto 0);
 
-        -- Wishbone Slave Interface (Data)
-        wb_dif_adr_i : in  std_logic_vector(C_ADDR_WIDTH-1 downto 0);
-        wb_dif_dat_i : in  std_logic_vector(C_DATA_WIDTH-1 downto 0);
-        wb_dif_we_i  : in  std_logic;
-        wb_dif_sel_i : in  std_logic_vector(C_DATA_WIDTH/8-1 downto 0);
-        wb_dif_cyc_i : in  std_logic;
-        wb_dif_stb_i : in  std_logic;
-        wb_dif_dat_o : out std_logic_vector(C_DATA_WIDTH-1 downto 0);
-        wb_dif_ack_o : out std_logic;
-        wb_dif_err_o : out std_logic
+        -- PORT B --
+        PB_DATA_I : in  std_logic_vector(C_DATA_WIDTH-1 downto 0);
+        PB_ADDR_I : in  std_logic_vector(C_ADDR_WIDTH-1 downto 0);
+        PB_WE_I   : in  std_logic;
+        PB_DATA_O : out std_logic_vector(C_DATA_WIDTH-1 downto 0)
     );
 end entity wishbone_dual_port_ram;
 
@@ -43,6 +36,7 @@ architecture rtl of wishbone_dual_port_ram is
 
     -- Define the memory types
     type ram_type is array (0 to C_RAM_DEPTH-1) of std_logic_vector(C_DATA_WIDTH-1 downto 0);
+    type read_latency is array ( 0 to C_READ_LATENCY ) of std_logic_vector(C_ADDR_WIDTH-1 downto 0);
 
     -- Helper function to convert a hex character to std_logic_vector
     function hex_char_to_slv(c : character) return std_logic_vector is
@@ -85,62 +79,81 @@ architecture rtl of wishbone_dual_port_ram is
     attribute ram_style : string;
     attribute ram_style of ram_block : signal is "block";
 
+    signal pa_addr_delay : read_latency := ( others => ( others => '0' ));
+    signal pb_addr_delay : read_latency := ( others => ( others => '0' ));
+
 begin
 
-    -- Force Error signal low for clean transactions
-    wb_dif_err_o <= '0';
 
-    ---------------------------------------------------------
-    -- Port A: Dedicated Instruction Memory Port (Read Only)
-    ---------------------------------------------------------
-    process(clk)
+TRANSPARENT_READ_PROC: if C_READ_LATENCY = 0 generate
+ 
+process(PA_ADDR_I, PA_WE_I, PA_DATA_I,rst_n)
         variable word_addr_i : integer;
     begin
-        if rising_edge(clk) then
-            if rst_n = '0' then
-                wb_iif_ack_o <= '0';
-                wb_iif_dat_o <= (others => '0');
-            else
-                -- Traditional synchronous single-cycle pipelining 
-                wb_iif_ack_o <= wb_iif_cyc_i and wb_iif_stb_i;
-                
-                -- Shift address right by 2 to convert byte addressing to word addressing
-                word_addr_i := to_integer(unsigned(wb_iif_adr_i(C_ADDR_WIDTH-1 downto 2))) mod C_RAM_DEPTH;
-                wb_iif_dat_o <= ram_block(word_addr_i);
-            end if;
+        if rst_n = '0' then
+            PA_DATA_O <= (others => '0');
+        else               
+            word_addr_i := to_integer(unsigned(PA_ADDR_I(C_ADDR_WIDTH-1 downto 2))) mod C_RAM_DEPTH;
+            PA_DATA_O <= ram_block(word_addr_i);
         end if;
-    end process;
+end process;
 
 
-    ---------------------------------------------------------
-    -- Port B: Dedicated Data Memory Port (Read/Write)
-    ---------------------------------------------------------
-    process(clk)
-        variable word_addr_d : integer;
+process(PB_ADDR_I, PB_WE_I, PB_DATA_I,rst_n)
+        variable word_addr_i : integer;
     begin
-        if rising_edge(clk) then
-            if rst_n = '0' then
-                wb_dif_ack_o <= '0';
-                wb_dif_dat_o <= (others => '0');
-            else
-                wb_dif_ack_o <= wb_dif_cyc_i and wb_dif_stb_i;
-                
-                -- Convert byte-level address boundary down to word indexes
-                word_addr_d := to_integer(unsigned(wb_dif_adr_i(C_ADDR_WIDTH-1 downto 2))) mod C_RAM_DEPTH;
-                
-                if (wb_dif_cyc_i = '1' and wb_dif_stb_i = '1') then
-                    if wb_dif_we_i = '1' then
-                        -- Handle Byte-Enable writes (wb_dif_sel_i / rv_dif_be_i)
-                        if wb_dif_sel_i(0) = '1' then ram_block(word_addr_d)(7 downto 0)   <= wb_dif_dat_i(7 downto 0);   end if;
-                        if wb_dif_sel_i(1) = '1' then ram_block(word_addr_d)(15 downto 8)  <= wb_dif_dat_i(15 downto 8);  end if;
-                        if wb_dif_sel_i(2) = '1' then ram_block(word_addr_d)(23 downto 16) <= wb_dif_dat_i(23 downto 16); end if;
-                        if wb_dif_sel_i(3) = '1' then ram_block(word_addr_d)(31 downto 24) <= wb_dif_dat_i(31 downto 24); end if;
-                    end if;
-                    -- Synchronous read pipeline output
-                    wb_dif_dat_o <= ram_block(word_addr_d);
-                end if;
-            end if;
+        if rst_n = '0' then
+            PB_DATA_O <= (others => '0');
+        else               
+            word_addr_i := to_integer(unsigned(PB_ADDR_I(C_ADDR_WIDTH-1 downto 2))) mod C_RAM_DEPTH;
+            PB_DATA_O <= ram_block(word_addr_i);
         end if;
-    end process;
+end process;
+
+end generate;
+
+NON_TRANSPARENT_READ_PROC: if C_READ_LATENCY > 0 generate 
+
+process(clk)
+        variable word_addr_i : integer;
+begin
+    if rising_edge(clk) then
+        if rst_n = '0' then
+            PA_DATA_O <= (others => '0');
+        else 
+            -- Delay Read by at least 1 cycle --
+            pa_addr_delay(0) <= PA_ADDR_I;
+            for i in 0 to C_READ_LATENCY-1 loop
+                pa_addr_delay(i+1) <= pa_addr_delay(i);
+            end loop;
+            
+            word_addr_i := to_integer(unsigned(pa_addr_delay(C_READ_LATENCY-1)(C_ADDR_WIDTH-1 downto 2))) mod C_RAM_DEPTH;
+            PA_DATA_O <= ram_block(word_addr_i);
+        end if;
+    end if;
+end process;
+
+
+process(clk)
+        variable word_addr_i : integer;
+begin
+    if rising_edge(clk) then
+        if rst_n = '0' then
+            PB_DATA_O <= (others => '0');
+        else 
+            -- Delay Read by at least 1 cycle --
+            pb_addr_delay(0) <= PB_ADDR_I;
+            for i in 0 to C_READ_LATENCY-1 loop
+                pb_addr_delay(i+1) <= pb_addr_delay(i);
+            end loop;
+            
+            word_addr_i := to_integer(unsigned(pb_addr_delay(C_READ_LATENCY-1)(C_ADDR_WIDTH-1 downto 2))) mod C_RAM_DEPTH;
+            PB_DATA_O <= ram_block(word_addr_i);
+        end if;
+    end if;
+end process;
+
+end generate;
+
 
 end architecture rtl;
