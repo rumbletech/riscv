@@ -6,7 +6,7 @@ use IEEE.NUMERIC_STD.ALL;
 use riscv_core.riscv_core_pkg.ALL;
 
 
-entity fetch is
+entity fu is
     port (
         clk : in  std_logic := '0';
         rst_n : in  std_logic := '0';
@@ -22,9 +22,9 @@ entity fetch is
 		rv_iif_valid_o : out std_logic := '0'
 		
     );
-end entity fetch;
+end entity fu;
 
-architecture rtl of fetch is
+architecture rtl of fu is
 
 signal pc_incr : std_logic := '0';
 signal pc_load : std_logic := '0';

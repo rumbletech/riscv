@@ -28,7 +28,7 @@ signal rv_dec_data : std_logic_vector(C_RV_DATA_WIDTH-1 downto 0):= ( others => 
 
 begin
 
-inst_fetch : entity riscv_core.fetch
+inst_fetch : entity riscv_core.fu
  port map(
 	clk => clk,
 	rst_n => rst_n,

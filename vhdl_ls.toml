@@ -13,7 +13,11 @@ riscv_utils.files = [
 riscv_core.files = [
   'hdl/riscv_core_pkg.vhd',    
   'hdl/core/pc.vhd',
-  'hdl/core/fetch.vhd',  
+  'hdl/core/ifu.vhd',
+  'hdl/core/dfu.vhd',
+  'hdl/core/cu.vhd',    
+  'hdl/core/rf.vhd',
+  'hdl/core/du.vhd',  
   'hdl/riscv_top.vhd',
 ]
 

@@ -114,35 +114,39 @@ end generate;
 
 NON_TRANSPARENT_READ_PROC: if C_READ_LATENCY > 0 generate 
 
-process(clk)
+
+process(clk,pa_addr_delay)
         variable word_addr_i : integer;
 begin
+    pa_addr_delay(0) <= PA_ADDR_I;
+
     if rising_edge(clk) then
         if rst_n = '0' then
             PA_DATA_O <= (others => '0');
         else 
             -- Delay Read by at least 1 cycle --
-            pa_addr_delay(0) <= PA_ADDR_I;
             for i in 0 to C_READ_LATENCY-1 loop
                 pa_addr_delay(i+1) <= pa_addr_delay(i);
             end loop;
             
-            word_addr_i := to_integer(unsigned(pa_addr_delay(C_READ_LATENCY-1)(C_ADDR_WIDTH-1 downto 2))) mod C_RAM_DEPTH;
+            word_addr_i := to_integer(unsigned(pa_addr_delay(0)(C_ADDR_WIDTH-1 downto 2))) mod C_RAM_DEPTH;
             PA_DATA_O <= ram_block(word_addr_i);
         end if;
     end if;
+
 end process;
 
 
-process(clk)
+process(clk,pb_addr_delay)
         variable word_addr_i : integer;
 begin
+    pb_addr_delay(0) <= PB_ADDR_I;
+
     if rising_edge(clk) then
         if rst_n = '0' then
             PB_DATA_O <= (others => '0');
         else 
             -- Delay Read by at least 1 cycle --
-            pb_addr_delay(0) <= PB_ADDR_I;
             for i in 0 to C_READ_LATENCY-1 loop
                 pb_addr_delay(i+1) <= pb_addr_delay(i);
             end loop;
